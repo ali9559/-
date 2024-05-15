@@ -1,0 +1,89 @@
+
+
+class Node:
+  def __init__(self, coef, power):
+    self.coef = coef
+    self.power = power
+    self.prev = None
+    self.next = None
+
+class List:
+  def __init__(self):
+    self.head = Node(None, None)
+    self.head.next = self.head
+    self.head.prev = self.head
+    self.n = 0
+
+  # it will be used for insert method
+  def insert_after(self, x, coef, power):
+    if self.size() == 0:
+      raise Exception("List is empty.")
+    y = Node(coef, power)
+    self.n += 1
+    y.prev = x
+    y.next = x.next
+    x.next = y
+    y.next.prev = y
+    return y
+
+  def insert(self, coef, power):
+    self.n += 1
+    x = self.head.next
+    while x != self.head and x.power > power:
+        x = x.next
+    self.insert_after(x.prev, coef, power)
+
+  def get(self, ind):
+    if ind >= self.size():
+      raise Exception("Out of list")
+    x = self.head.next
+    for i in range(ind):
+      x = x.next
+    return f"coef : {x.coef}, power : {x.power}"
+
+
+  def find(self, coef, power):
+    x = self.head.next
+    for i in range(self.size()):
+      if x.coef == coef:
+        if x.power == power:
+          return x
+      x = x.next
+    raise Exception("Doesn't exist")
+
+  def delete(self, x):
+    if self.size() == 0:
+        raise Exception("List is empty")
+    self.n -= 1
+    x.prev.next = x.next
+    x.next.prev = x.prev
+    return x
+
+  def size(self):
+    return self.n
+
+  def add(self, coef1, power1, coef2, power2):
+    node1 = self.find(coef1, power1)
+    node2 = self.find(coef2, power2)
+    node1.coef += node2.coef
+    self.delete(node2)
+    return None
+
+  def mul(self, coef1, power1, coef2, power2):
+    node1 = self.find(coef1, power1)
+    node2 = self.find(coef2, power2)
+    if node1.power == node2.power:
+      result_coef = node1.coef * node2.coef
+      result_power = node1.power
+      self.delete(node1)
+      self.delete(node2)
+      self.insert(result_coef, result_power)
+    elif node1.coef == node2.coef:
+      result_coef = node1.coef
+      result_power = node1.power + node2.power
+      self.delete(node1)
+      self.delete(node2)
+      self.insert(result_coef, result_power)
+    else:
+      raise Exception("multiply operation can't be done!")
+     
